@@ -1,0 +1,42 @@
+<ion-view title="Geolocation">
+    <!--Navbar Buttons-->
+    <!--<ion-nav-buttons side="left">-->
+        <!--<button class="button button-clear" ng-click="openModal()">-->
+            <!--<i class="fa fa-plus-circle"></i>-->
+        <!--</button>-->
+    <!--</ion-nav-buttons>-->
+    <!--<ion-nav-buttons side="right">-->
+        <!--<button class="button button-clear" ng-click="toggleSearch()">-->
+            <!--<i class="fa fa-search"></i>-->
+        <!--</button>-->
+    <!--</ion-nav-buttons>-->
+
+    <!--Content-->
+    <ion-content id="content" start-y="50" overflow-scroll="true" >
+        <!--insert content-->
+        <div id="geolocation"></div>
+        <div class="list">
+            <button class="button button-balanced button-block" ng-click="sendSMS()">
+                <p>Send&nbsp;
+                    <span class="fa-stack fa-lg">
+                      <i class="fa fa-square-o fa-stack-2x"></i>
+                      <i class="fa fa-share fa-stack"></i>
+                    </span>
+                </p>
+            </button>
+
+            <label class="item item-input item-floating-label">
+                <span class="input-label">Recipient</span>
+                <input type="text" placeholder="Recipient" data-ng-model="sms.number">
+            </label>
+            <label class="item item-input item-floating-label">
+                <span class="input-label">Message</span>
+                <textarea rows="8" cols="10" placeholder="Message" data-ng-model="sms.message">
+                </textarea>
+            </label>
+        </div>
+    </ion-content>
+
+</ion-view>
+
+

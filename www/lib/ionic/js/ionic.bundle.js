@@ -28620,14 +28620,14 @@ var ngStyleDirective = ngDirective(function(scope, element, attr) {
         <div class="animate-switch-container"
           ng-switch on="selection">
             <div class="animate-switch" ng-switch-when="settings">Settings Div</div>
-            <div class="animate-switch" ng-switch-when="home">Home Span</div>
+            <div class="animate-switch" ng-switch-when="chat">Home Span</div>
             <div class="animate-switch" ng-switch-default>default</div>
         </div>
       </div>
     </file>
     <file name="script.js">
       function Ctrl($scope) {
-        $scope.items = ['settings', 'home', 'other'];
+        $scope.items = ['settings', 'chat', 'other'];
         $scope.selection = $scope.items[0];
       }
     </file>
@@ -28671,7 +28671,7 @@ var ngStyleDirective = ngDirective(function(scope, element, attr) {
       it('should start in settings', function() {
         expect(switchElem.getText()).toMatch(/Settings Div/);
       });
-      it('should change to home', function() {
+      it('should change to chat', function() {
         select.element.all(by.css('option')).get(1).click();
         expect(switchElem.getText()).toMatch(/Home Span/);
       });
@@ -33347,7 +33347,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory,           $
    *   return result;
    * });
    *
-   * $stateProvider.state('home', {
+   * $stateProvider.state('chat', {
    *   views: {
    *     'contact.list': { controller: 'ListController' },
    *     'contact.item': { controller: 'ItemController' }
@@ -33356,9 +33356,9 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory,           $
    *
    * // ...
    *
-   * $state.go('home');
-   * // Auto-populates list and item views with /partials/home/contact/list.html,
-   * // and /partials/home/contact/item.html, respectively.
+   * $state.go('chat');
+   * // Auto-populates list and item views with /partials/chat/contact/list.html,
+   * // and /partials/chat/contact/item.html, respectively.
    * </pre>
    *
    * @param {string} name The name of the builder function to decorate. 
@@ -33498,24 +33498,24 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory,           $
    * // Some state name examples
    *
    * // stateName can be a single top-level name (must be unique).
-   * $stateProvider.state("home", {});
+   * $stateProvider.state("chat", {});
    *
    * // Or it can be a nested state name. This state is a child of the 
-   * // above "home" state.
-   * $stateProvider.state("home.newest", {});
+   * // above "chat" state.
+   * $stateProvider.state("chat.newest", {});
    *
    * // Nest states as deeply as needed.
-   * $stateProvider.state("home.newest.abc.xyz.inception", {});
+   * $stateProvider.state("chat.newest.abc.xyz.inception", {});
    *
    * // state() returns $stateProvider, so you can chain state declarations.
    * $stateProvider
-   *   .state("home", {})
+   *   .state("chat", {})
    *   .state("about", {})
    *   .state("contacts", {});
    * </pre>
    *
-   * @param {string} name A unique state name, e.g. "home", "about", "contacts". 
-   * To create a parent/child state use a dot, e.g. "about.sales", "home.newest".
+   * @param {string} name A unique state name, e.g. "chat", "about", "contacts".
+   * To create a parent/child state use a dot, e.g. "about.sales", "chat.newest".
    * @param {object} definition State configuration object.
    */
   this.state = state;
@@ -34387,7 +34387,7 @@ angular.module('ui.router.state').provider('$uiViewScroll', $ViewScrollProvider)
  * single view and it is unnamed then you can populate it like so:
  * <pre>
  * <div ui-view></div> 
- * $stateProvider.state("home", {
+ * $stateProvider.state("chat", {
  *   template: "<h1>HELLO!</h1>"
  * })
  * </pre>
@@ -34395,7 +34395,7 @@ angular.module('ui.router.state').provider('$uiViewScroll', $ViewScrollProvider)
  * The above is a convenient shortcut equivalent to specifying your view explicitly with the {@link ui.router.state.$stateProvider#views `views`}
  * config property, by name, in this case an empty name:
  * <pre>
- * $stateProvider.state("home", {
+ * $stateProvider.state("chat", {
  *   views: {
  *     "": {
  *       template: "<h1>HELLO!</h1>"
@@ -34411,7 +34411,7 @@ angular.module('ui.router.state').provider('$uiViewScroll', $ViewScrollProvider)
  * <div ui-view="main"></div>
  * </pre> 
  * <pre>
- * $stateProvider.state("home", {
+ * $stateProvider.state("chat", {
  *   views: {
  *     "main": {
  *       template: "<h1>HELLO!</h1>"
@@ -34428,7 +34428,7 @@ angular.module('ui.router.state').provider('$uiViewScroll', $ViewScrollProvider)
  * </pre>
  * 
  * <pre>
- * $stateProvider.state("home", {
+ * $stateProvider.state("chat", {
  *   views: {
  *     "": {
  *       template: "<h1>HELLO!</h1>"
@@ -34680,7 +34680,7 @@ function stateContext(el) {
  * Here's an example of how you'd use ui-sref and how it would compile. If you have the 
  * following template:
  * <pre>
- * <a ui-sref="home">Home</a> | <a ui-sref="about">About</a>
+ * <a ui-sref="chat">Home</a> | <a ui-sref="about">About</a>
  * 
  * <ul>
  *     <li ng-repeat="contact in contacts">
@@ -34691,7 +34691,7 @@ function stateContext(el) {
  * 
  * Then the compiled html would be (assuming Html5Mode is off):
  * <pre>
- * <a href="#/home" ui-sref="home">Home</a> | <a href="#/about" ui-sref="about">About</a>
+ * <a href="#/chat" ui-sref="chat">Home</a> | <a href="#/about" ui-sref="about">About</a>
  * 
  * <ul>
  *     <li ng-repeat="contact in contacts">
@@ -34705,7 +34705,7 @@ function stateContext(el) {
  *     </li>
  * </ul>
  *
- * <a ui-sref="home" ui-sref-opts="{reload: true}">Home</a>
+ * <a ui-sref="chat" ui-sref-opts="{reload: true}">Home</a>
  * </pre>
  *
  * @param {string} ui-sref 'stateName' can be any valid absolute or relative state
@@ -34949,7 +34949,7 @@ function $RouteProvider(  $stateProvider,    $urlRouterProvider) {
    * var app = angular.module('app', ['ui.router.compat']);
    *
    * app.config(function ($routeProvider) {
-   *   $routeProvider.when('home', {
+   *   $routeProvider.when('chat', {
    *     controller: function () { ... },
    *     templateUrl: 'path/to/template'
    *   });
@@ -41354,7 +41354,7 @@ function($animate, $timeout) {
  * automatically close the currently opened menu.
  *
  * ```html
- * <a menu-close href="#/home" class="item">Home</a>
+ * <a menu-close href="#/chat" class="item">Home</a>
  * ```
  */
 IonicModule
@@ -41794,7 +41794,7 @@ IonicModule
  * between views.
  *
  * ```html
- * <a nav-clear menu-close href="#/home" class="item">Home</a>
+ * <a nav-clear menu-close href="#/chat" class="item">Home</a>
  * ```
  */
 IonicModule
@@ -41890,7 +41890,7 @@ IonicModule.constant('$ionicNavViewConfig', {
  *   $stateProvider
  *   .state('index', {
  *     url: '/',
- *     templateUrl: 'home.html'
+ *     templateUrl: 'chat.html'
  *   })
  *   .state('music', {
  *     url: '/music',
@@ -41899,14 +41899,14 @@ IonicModule.constant('$ionicNavViewConfig', {
  * });
  * ```
  * Then on app start, $stateProvider will look at the url, see it matches the index state,
- * and then try to load home.html into the `<ion-nav-view>`.
+ * and then try to load chat.html into the `<ion-nav-view>`.
  *
  * Pages are loaded by the URLs given. One simple way to create templates in Angular is to put
  * them directly into your HTML file and use the `<script type="text/ng-template">` syntax.
- * So here is one way to put home.html into our app:
+ * So here is one way to put chat.html into our app:
  *
  * ```html
- * <script id="home" type="text/ng-template">
+ * <script id="chat" type="text/ng-template">
  *   <!-- The title of the ion-view will be shown on the navbar -->
  *   <ion-view title="'Home'">
  *     <ion-content ng-controller="HomeCtrl">

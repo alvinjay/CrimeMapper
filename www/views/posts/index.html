@@ -1,0 +1,45 @@
+<ion-view title="Posts" >
+    <ion-nav-buttons side="left">
+        <button class="button button-clear" ng-click="openModal()">
+            <i class="fa fa-plus-circle"></i>
+        </button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <button class="button button-clear" ng-click="toggleSearch()">
+            <i class="fa fa-search"></i>
+        </button>
+    </ion-nav-buttons>
+    <ion-content id="content" start-y="50" overflow-scroll="true" >
+        <ion-scroll on-scroll="checkSearch()">
+            <div class="bar bar-header item-input-inset search" data-ng-show="data.showSearch">
+                <label class="item-input-wrapper">
+                    <i class="icon ion-ios7-search placeholder-icon"></i>
+                    <input id="searchBox" type="text" placeholder="Search" data-ng-model="search">
+                </label>
+                <button id="searchCancel" class="button button-clear button-light" data-ng-click="toggleSearch()">
+                    Cancel
+                </button>
+            </div>
+
+            <div class="list card" data-ng-repeat="p in posts | filter:search">
+                <div class="item item-avatar-right">
+                    <a class="dark" data-ng-click="delete($index)" href="#/posts">
+                        <i class="fa fa-trash-o pull-right"></i>
+                    </a>
+                    <h2>{{ p.author.name }}</h2>
+                    <p>{{ p.date_posted  | date:'MMMM dd, yyyy'}}</p>
+                </div>
+
+                <div class="item item-body">
+                    <h2>{{ p.title }}</h2>
+                    <p>
+                        {{ p.content }}
+                    </p>
+                </div>
+
+            </div>
+        </ion-scroll>
+    </ion-content>
+</ion-view>
+<!--import modals-->
+<script id="add.html" type="text/ng-template" src="views/posts/modal/add.html"></script>

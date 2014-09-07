@@ -13,25 +13,50 @@
 
             $scope.contact = {};
 
+            // onSuccess Callback
+            // This method accepts a Position object, which contains the
+            // current GPS coordinates
+            //
+            var onSuccess = function(position) {
+                  var str  = 'Latitude: ' + position.coords.latitude          + '\n' +
+                    'Longitude: '         + position.coords.longitude         + '\n' +
+                    'Altitude: '          + position.coords.altitude          + '\n' +
+                    'Accuracy: '          + position.coords.accuracy          + '\n' +
+                    'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+                    'Heading: '           + position.coords.heading           + '\n' +
+                    'Speed: '             + position.coords.speed             + '\n' +
+                    'Timestamp: '         + position.timestamp                + '\n';
+                $('#geolocation').html(str);
+                $scope.sms.message = str;
+            };
+
+            // onError Callback receives a PositionError object
+            //
+            function onError(error) {
+                alert('code: '    + error.code    + '\n' +
+                    'message: ' + error.message + '\n');
+            }
+
+            navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
             // begin watching
-            var watch = $cordovaGeolocation.watchPosition({ frequency: 10000 });
-            watch.promise.then(function() { /* Not  used */ },
-                function(err) {
-                    // An error occurred.
-                },
-                function(position) {
-                    var str = 'Latitude: '  + position.coords.latitude  + '<br/>' +
-                        ' Longitude: ' + position.coords.longitude + '<br />' +
-                        ' Altitude: ' + position.coords.altitude + '<br />' +
-                        ' Heading: ' + position.coords.heading + '<br />' +
-                        ' Speed: ' + position.coords.speed + '<br />' +
-                        ' Timestamp: ' + new Date(position.timestamp);
+//            var watch = $cordovaGeolocation.watchPosition({ frequency: 10000 });
+//            watch.promise.then(function() { /* Not  used */ },
+//                function(err) {
+//                    // An error occurred.
+//                },
+//                function(position) {
+//                    var str = 'Latitude: '  + position.coords.latitude  + '<br/>' +
+//                        ' Longitude: ' + position.coords.longitude + '<br />' +
+//                        ' Altitude: ' + position.coords.altitude + '<br />' +
+//                        ' Heading: ' + position.coords.heading + '<br />' +
+//                        ' Speed: ' + position.coords.speed + '<br />' +
+//                        ' Timestamp: ' + new Date(position.timestamp);
 //                    $('#geolocation').html(str);
-                    $scope.sms.message = str;
-                });
+//                    $scope.sms.message = str;
+//                });
 
             // clear watch
-            $cordovaGeolocation.clearWatch(watch.watchID)
+//            $cordovaGeolocation.clearWatch(watch.watchID)
 
             document.addEventListener("deviceready", onDeviceReady, false);
 

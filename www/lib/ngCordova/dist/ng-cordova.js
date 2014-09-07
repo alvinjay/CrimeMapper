@@ -948,6 +948,7 @@ angular.module('ngCordova.plugins', [
   'ngCordova.plugins.contacts',
   'ngCordova.plugins.statusbar',
   'ngCordova.plugins.file',
+  'ngCordova.plugins.sms',
   'ngCordova.plugins.socialSharing',
   'ngCordova.plugins.globalization',
   'ngCordova.plugins.sqlite',
@@ -1077,6 +1078,27 @@ angular.module('ngCordova.plugins.push', [])
         }
     };
 }]);
+angular.module('ngCordova.plugins.sms', ['ionic'])
+
+        .factory('$cordovaSms', ['$q', '$ionicPopup', function ($q, $ionicPopup) {
+
+            return {
+                send: function (number, message, intent) {
+                    var q = $q.defer();
+                    var result = 'neutral';
+                    sms.send(number, message, intent, function (res) {
+                       result = 'success';
+                        q.resolve(res);
+                    }, function (err) {
+                       result = 'fail';
+                        q.reject(err)
+                    });
+                    console.log('Q:' + q);
+                    return q.promise;
+                }
+            }
+
+        }]);
 // NOTE: shareViaSms -> access multiple numbers in a string like: '0612345678,0687654321'
 // NOTE: shareViaEmail -> if user cancels sharing email, success is still called
 // NOTE: shareViaEmail -> TO, CC, BCC must be an array, Files can be either null, string or array

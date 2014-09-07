@@ -1,7 +1,7 @@
 /* global Firebase */
 (function(angular){
     angular.module('App')
-        .controller('MapsController', function($scope, IonicPopupService, $cordovaDialogs, $cordovaGeolocation, $cordovaNetwork, $cordovaSocialSharing){
+        .controller('MapsController', function($scope, IonicPopupService, $cordovaDialogs, $cordovaGeolocation, $cordovaNetwork, $cordovaSms){
 
             $scope.deviceready = false;
 
@@ -52,16 +52,17 @@
                     IonicPopupService.showAlert('Cordova Status', $scope.deviceready.toString());
                 }
                 else {
-                    $cordovaSocialSharing
-                        .shareViaSMS($scope.sms.message, $scope.sms.number)
-                        .then(function(result) {
-                            // Success!
-                            IonicPopupService.showAlert('success', result);
-                        }, function(err) {
-                            // An error occured. Show a message to the user
-                            IonicPopupService.showAlert('fail', err);
-                        });
-//                    IonicPopupService.showAlert('Cordova Status', $scope.deviceready.toString());
+//                    $cordovaSocialSharing
+//                        .shareViaSMS($scope.sms.message, $scope.sms.number)
+//                        .then(function(result) {
+//                            // Success!
+//                            IonicPopupService.showAlert('success', result);
+//                        }, function(err) {
+//                            // An error occured. Show a message to the user
+//                            IonicPopupService.showAlert('fail', err);
+//                        });
+                    var res = $cordovaSms.send('+639232730101','whatup', null);
+                    console.log(res);
                 }
             }
         });

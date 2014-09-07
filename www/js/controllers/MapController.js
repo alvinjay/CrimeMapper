@@ -1,9 +1,14 @@
 /* global Firebase */
 (function(angular){
     angular.module('App')
-        .controller('MapsController', function($scope, IonicPopupService, $cordovaGeolocation, $cordovaSocialSharing){
+        .controller('MapsController', function($scope, IonicPopupService, $cordovaDialogs, $cordovaGeolocation, $cordovaNetwork, $cordovaSocialSharing){
 
-            $scope.sms = {};
+            $scope.deviceready = false;
+
+            $scope.sms = {
+                message: 'whatup',
+                number: '639232730101'
+            };
 
             // begin watching
             var watch = $cordovaGeolocation.watchPosition({ frequency: 10000 });
@@ -26,22 +31,38 @@
             // clear watch
             $cordovaGeolocation.clearWatch(watch.watchID)
 
-            // access multiple numbers in a string like: '0612345678,0687654321'
-            $cordovaSocialSharing
-                .shareViaSMS($scope.sms.message, $scope.sms.number)
-                .then(function(result) {
-                    // Success!
-                    IonicPopupService('success', result);
-                }, function(err) {
-                    // An error occured. Show a message to the user
-                    IonicPopupService('fail', err);
-                });
-            $(document).ready(
-//                $scope.sendSMS = function(){
-//                  window.plugins.socialsharing.shareViaSMS("message", "+639232730101", function(){alert("ok")}, function(e){alert("error: " + e)});
-//                }
-                console.log(window)
-            );
+            document.addEventListener("deviceready", onDeviceReady, false);
 
+            function onDeviceReady() {
+                // Now safe to use device APIs
+                // access multiple numbers in a string like: '0612345678,0687654321'
+
+                $scope.deviceready = true;
+
+                var type = $cordovaNetwork.getNetwork();
+                var isOnline = $cordovaNetwork.isOnline();
+                var isOffline = $cordovaNetwork.isOffline();
+
+//                $cordovaDialogs.alert(isOnline);
+            }
+
+            $scope.sendSMS = function() {
+
+                if (! $scope.deviceready) {
+                    IonicPopupService.showAlert('Cordova Status', $scope.deviceready.toString());
+                }
+                else {
+                    $cordovaSocialSharing
+                        .shareViaSMS($scope.sms.message, $scope.sms.number)
+                        .then(function(result) {
+                            // Success!
+                            IonicPopupService.showAlert('success', result);
+                        }, function(err) {
+                            // An error occured. Show a message to the user
+                            IonicPopupService.showAlert('fail', err);
+                        });
+//                    IonicPopupService.showAlert('Cordova Status', $scope.deviceready.toString());
+                }
+            }
         });
 })(window.angular);

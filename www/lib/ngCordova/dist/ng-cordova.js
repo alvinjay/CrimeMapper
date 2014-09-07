@@ -157,9 +157,9 @@ angular.module('ngCordova.plugins.capture', [])
   }
 }]);
 
-angular.module('ngCordova.plugins.contacts', [])
+angular.module('ngCordova.plugins.contacts', ['ionic'])
 
-.factory('$cordovaContacts', ['$q', function ($q) {
+.factory('$cordovaContacts', ['$q', '$ionicLoading', function ($q, $ionicLoading) {
 
   return {
     save: function (contact) {
@@ -207,18 +207,17 @@ angular.module('ngCordova.plugins.contacts', [])
         options);
 
       return q.promise;
+    },
+    pickContact: function () {
+        var q = $q.defer();
+        navigator.contacts.pickContact(function(contact){
+            q.resolve(contact);
+        },function(err){
+            q.reject(err);
+        });
+
+        return q.promise;
     }
-
-    /*
-     getContact: function (contact) {
-     var q = $q.defer();
-
-     navigator.contacts.pickContact(function (contact) {
-
-     })
-
-     }
-     */
 
     // TODO: method to set / get ContactAddress
     // TODO: method to set / get ContactError
@@ -1080,20 +1079,16 @@ angular.module('ngCordova.plugins.push', [])
 }]);
 angular.module('ngCordova.plugins.sms', ['ionic'])
 
-        .factory('$cordovaSms', ['$q', '$ionicPopup', function ($q, $ionicPopup) {
+        .factory('$cordovaSms', ['$q', '$ionicPopup', '$ionicLoading', function ($q, $ionicPopup, $ionicLoading) {
 
             return {
                 send: function (number, message, intent) {
                     var q = $q.defer();
-                    var result = 'neutral';
                     sms.send(number, message, intent, function (res) {
-                       result = 'success';
                         q.resolve(res);
                     }, function (err) {
-                       result = 'fail';
                         q.reject(err)
                     });
-                    console.log('Q:' + q);
                     return q.promise;
                 }
             }

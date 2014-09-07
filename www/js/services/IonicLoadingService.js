@@ -3,13 +3,12 @@
     angular.module('App')
         .service('IonicLoadingService', function($ionicLoading){
             return{
-                show: function showLoading(){
+                show: function showLoading(message){
                     $ionicLoading.show({
-                        template: 'Loading Data...',
+                        template:  message||'Loading Data...',
                         animation: 'fade-in',
                         showBackdrop: true,
                         maxWidth: 200,
-                        showDelay: 500
                     });
                 },
                 hide: function hideLoading(){

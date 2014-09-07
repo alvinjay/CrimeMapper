@@ -16,22 +16,29 @@
         <!--insert content-->
         <div id="geolocation"></div>
         <div class="list">
-            <button class="button button-balanced button-block" ng-click="sendSMS()">
-                <p>Send&nbsp;
-                    <span class="fa-stack fa-lg">
-                      <i class="fa fa-square-o fa-stack-2x"></i>
-                      <i class="fa fa-share fa-stack"></i>
-                    </span>
-                </p>
-            </button>
+            <div class="button-bar">
+                <a class="button button-calm" data-ng-click="pickContact()">
+                    Pick Recipient&nbsp;
+                    <i class="fa fa-user"></i>
+                </a>
+                <a class="button button-balanced" data-ng-init="data.nullNumber = true"
+                   data-ng-click="sendSMS()" data-ng-disabled="data.nullNumber">
+                    Send&nbsp;
+                    <i class="fa fa-share"></i>
+                </a>
+            </div>
 
             <label class="item item-input item-floating-label">
                 <span class="input-label">Recipient</span>
-                <input type="text" placeholder="Recipient" data-ng-model="sms.number">
+                <input type="text" placeholder="Recipient" data-ng-model="sms.number"
+                       data-ng-change="checkNumber()"
+                       data-ng-init="sms.number = null">
             </label>
             <label class="item item-input item-floating-label">
                 <span class="input-label">Message</span>
-                <textarea rows="8" cols="10" placeholder="Message" data-ng-model="sms.message">
+                <textarea rows="8" cols="10" placeholder="Message"
+                          data-ng-model="sms.message"
+                          data-ng-init="sms.message = null">
                 </textarea>
             </label>
         </div>

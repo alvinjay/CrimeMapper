@@ -1,141 +1,167 @@
 /* global Firebase */
 (function(angular){
     angular.module('App')
-        .controller('MapsController', function($scope, IonicPopupService, IonicLoadingService, $cordovaDialogs, $cordovaGeolocation, $cordovaNetwork, $cordovaSms, $cordovaContacts){
+        .controller('MapsController', function($scope, IonicPopupService, IonicLoadingService, FirebaseService, $cordovaDialogs, $cordovaGeolocation, $cordovaCamera, $rootScope, $interval){
 
-            $scope.data = {
-                nullNumber: true
-            };
+            /* model Internet and Firebase Connection */
+            $scope.isOnline = false;
+            $scope.isConnected = false;
 
-            $scope.deviceready = false;
+            /* input groups shown status */
+            $scope.typeGroup = false;
+            $scope.infoGroup = false;
 
-            $scope.sms = {};
+            /* crime types available */
+            $scope.type = { name: "(Select)", items: []};
+            $scope.types = ["Theft", "Murder", "Assault"];
 
-            $scope.contact = {};
+            /* ref for firebase connection */
+            $scope.firebaseConnection = FirebaseService.checkConnection();
 
-            // onSuccess Callback
-            // This method accepts a Position object, which contains the
-            // current GPS coordinates
-            //
-            var onSuccess = function(position) {
-                  var str  = 'Latitude: ' + position.coords.latitude          + '\n' +
-                    'Longitude: '         + position.coords.longitude         + '\n' +
-                    'Altitude: '          + position.coords.altitude          + '\n' +
-                    'Accuracy: '          + position.coords.accuracy          + '\n' +
-                    'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                    'Heading: '           + position.coords.heading           + '\n' +
-                    'Speed: '             + position.coords.speed             + '\n' +
-                    'Timestamp: '         + position.timestamp                + '\n';
-                $('#geolocation').html(str);
-                $scope.sms.message = str;
-            };
+            /* watch for Internet Connection status changes */
+            $scope.$watch('online', function(newStatus) {
+                $scope.isOnline = newStatus;
+                $scope.firebaseConnection = FirebaseService.checkConnection();
+                $scope.root = FirebaseService.getRef('/');
+            });
 
-            // onError Callback receives a PositionError object
-            //
-            function onError(error) {
-                alert('code: '    + error.code    + '\n' +
-                    'message: ' + error.message + '\n');
-            }
+            /* watch for changes in firebase connection value */
+            $scope.firebaseConnection.on('value', function(snap) {
+                if (snap.val() === true) {
+                    $scope.isConnected = true;
+                    $('#firebase').html('Firebase: Connected');
+                    console.log(
+                        'Internet:' + $scope.isOnline +
+                            '\nFirebase: ' + $scope.isConnected
+                    );
+                }
+                else
+                {
+                    $scope.isConnected = false;
+                    $('#firebase').html('Firebase: Disconnected');
+                }
+            });
 
-            navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
             // begin watching
-//            var watch = $cordovaGeolocation.watchPosition({ frequency: 10000 });
-//            watch.promise.then(function() { /* Not  used */ },
-//                function(err) {
-//                    // An error occurred.
-//                },
-//                function(position) {
-//                    var str = 'Latitude: '  + position.coords.latitude  + '<br/>' +
-//                        ' Longitude: ' + position.coords.longitude + '<br />' +
-//                        ' Altitude: ' + position.coords.altitude + '<br />' +
-//                        ' Heading: ' + position.coords.heading + '<br />' +
-//                        ' Speed: ' + position.coords.speed + '<br />' +
-//                        ' Timestamp: ' + new Date(position.timestamp);
-//                    $('#geolocation').html(str);
-//                    $scope.sms.message = str;
-//                });
+            var watch = $cordovaGeolocation.watchPosition({ enableHighAccuracy: true });
+            watch.promise.then(function() { /* Not  used */ },
+                function(err) {
+                    // An error occurred.
+                    $('#geolocation').html('Cannot locate your device');
+                },
+                function(position) {
+                    $scope.input.location.latitude =  position.coords.latitude;
+                    $scope.input.location.longitude =  position.coords.longitude;
+                    var str = 'Latitude: '  + $scope.input.location.latitude  + '<br/>' +
+                        ' Longitude: ' + $scope.input.location.longitude + '<br />';
+                    $('#geolocation').html(str);
+                });
 
             // clear watch
 //            $cordovaGeolocation.clearWatch(watch.watchID)
-
-            document.addEventListener("deviceready", onDeviceReady, false);
 
             function onDeviceReady() {
                 // Now safe to use device APIs
                 // access multiple numbers in a string like: '0612345678,0687654321'
 
-                $scope.deviceready = true;
-
-                var type = $cordovaNetwork.getNetwork();
-                var isOnline = $cordovaNetwork.isOnline();
-                var isOffline = $cordovaNetwork.isOffline();
-
 //                $cordovaDialogs.alert(isOnline);
+            };
+
+            /*  Inputs */
+            $scope.input = {
+                type: null,
+                sender:{
+                    name: null,
+                    contact: null
+                },
+                location: {
+                    lat: null,
+                    long: null
+                },
+                attachments: {
+                    img: null
+                },
+                timestamp: null
+            };
+
+
+
+            for (var i=0; i < $scope.types.length; i++) {
+               $scope.type.items.push($scope.types[i] + "");
             }
 
-            $scope.pickContact = function(){
-                $scope.contact.options = new ContactFindOptions();
-
-//                    $scope.contact.options.filter   = "Alvin";
-//                    $scope.contact.options.multiple = true;
-//                    $scope.contact.options.desiredFields = [navigator.contacts.fieldType.id];
-//
-//                    function onSuccess(contacts) {
-//                        $scope.contacts = contacts;
-//                        console.log(contacts.length);
-//                    };
-//
-//                    function onError(contactError) {
-//                        console.log('error');
-//                    };
-//
-//                    var fields       = [navigator.contacts.fieldType.displayName, navigator.contacts.fieldType.name];
-//                    navigator.contacts.find(fields, onSuccess, onError, $scope.contact.options);
-
-                if (! $scope.deviceready) {
-                    IonicPopupService.showAlert('Cordova Status', $scope.deviceready.toString());
+            /*
+             * toggle accordion group shown
+             */
+            $scope.toggleGroup = function(group) {
+                if (group == 'type') {
+                    $scope.typeGroup = !$scope.typeGroup;
+                } else {
+                    $scope.infoGroup = !$scope.infoGroup;
                 }
-                else {
-                    IonicLoadingService.show('Loading contacts...');
-                    var promise = $cordovaContacts.pickContact();
+            };
+
+            /* select incident type */
+            $scope.selectType = function(typeSelected){
+                $scope.type.name = $scope.input.type = typeSelected;
+                $scope.typeGroup = false;
+            };
+
+            /* refresh UI bug in angular JS */
+            $scope.refreshUI = function(){
+                $scope.typeGroup = !$scope.typeGroup;
+                $scope.typeGroup = !$scope.typeGroup;
+            };
+
+            /* process location before submitting report */
+            $scope.submitReport = function(){
+                IonicLoadingService.show('Submitting Report...');
+//                newIncident.set($scope.input);
+                //TO DO: add code to determine station number
+//                console.log(new Date().getTime());
+                $scope.input.timestamp = new Date().getTime();
+                //station(N)/new ref
+                var station = $scope.root.child('station1/new');
+                var countRef = station.child('count');
+                countRef.once('value', function(snapshot){
+                    //get initial count;
+                    var count = parseInt(snapshot.val());
+                    //push new object to firebase
+                    station.push($scope.input);
+                    //update count in firebase
+                    station.update({ count: ++count + ''}, function(snapshot){
+//                        console.log('new count:' + snapshot.val());
+                    });
                     IonicLoadingService.hide();
-
-                    promise.then(function(contact) {
-                        $scope.sms.number = contact.phoneNumbers[0].value;
-                        console.log(JSON.stringify(contact));
-                        $scope.data.nullNumber = false;
-                    }, function(reason) {
-                        console.log('fail');
-                    }, null);
-                }
+                    IonicPopupService.showSuccess("Please wait for a text message/call from the police");
+                });
             }
 
-            $scope.sendSMS = function() {
-                if (! $scope.deviceready) {
-                    IonicPopupService.showAlert('Cordova Status', $scope.deviceready.toString());
-                }
-                else {
-                    var promise = $cordovaSms.send($scope.sms.number,$scope.sms.message, null);
-                    IonicLoadingService.show('Sending message...');
+            $scope.takePicture = function() {
+                var options = {
+                    quality : 50,
+                    destinationType : Camera.DestinationType.DATA_URL,
+                    sourceType : Camera.PictureSourceType.CAMERA,
+                    allowEdit : true,
+                    encodingType: Camera.EncodingType.JPEG,
+                    targetWidth: 600,
+//                    targetWidth: 2048,
+                    targetHeight: 480,
+//                    targetHeight: 1536,
+//                    correctOrientation: true,
+                    popoverOptions: CameraPopoverOptions,
+                    saveToPhotoAlbum: false
+                };
 
-                    promise.then(function(res) {
-                        console.log(JSON.stringify(res));
-                        IonicLoadingService.hide();
-                    }, function(err) {
-                        console.log(JSON.stringify(err));
-                        IonicLoadingService.hide();
-                    }, null);
-                }
-            }
-
-            $scope.checkNumber = function(){
-                if (! $scope.sms.number || $scope.sms.number === '') {
-                    $scope.data.nullNumber = true;
-                }
-                else {
-                    $scope.data.nullNumber = false;
-                }
-                console.log($scope.data.nullNumber);
+                $cordovaCamera.getPicture(options).then(function(imageData) {
+                    // Success! Image data is here
+                    var image = document.getElementById('attachmentImage');
+                    image.src = "data:image/jpeg;base64," + imageData;
+                    $scope.input.attachments.img = imageData;
+                }, function(err) {
+                    $('#firebase').html(err);
+                    // An error occured. Show a message to the user
+                });
             }
         });
 })(window.angular);

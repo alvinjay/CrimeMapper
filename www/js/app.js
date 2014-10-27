@@ -1,5 +1,5 @@
 angular.module('App', ['ionic','firebase','ngCordova'])
-    .run(function($ionicPlatform) {
+    .run(function($ionicPlatform,$window, $rootScope) {
         $ionicPlatform.ready(function() {
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
@@ -8,9 +8,22 @@ angular.module('App', ['ionic','firebase','ngCordova'])
             }
             if(window.StatusBar) {
                 // org.apache.cordova.statusbar required
-                StatusBar.styleDefault();
+                StatusBar.hide();
             }
         });
+
+        $rootScope.online = navigator.onLine;
+        $window.addEventListener("offline", function () {
+            $rootScope.$apply(function() {
+                $rootScope.online = false;
+            });
+        }, false);
+
+        $window.addEventListener("online", function () {
+            $rootScope.$apply(function() {
+                $rootScope.online = true;
+            });
+        }, false);
     })
     .config(function($stateProvider, $urlRouterProvider) {
 
@@ -20,56 +33,21 @@ angular.module('App', ['ionic','firebase','ngCordova'])
                 abstract: true,
                 templateUrl: "views/tabs.html"
             })
-            .state('app.chat', {
-                url: "/chat",
-                views: {
-                    'chat-tab': {
-                        templateUrl: "views/chat/index.html",
-                        controller: 'ChatsController'
-                    }
-                }
-            })
-            .state('app.posts', {
-                url: "/posts",
-                views: {
-                    'post-tab': {
-                        templateUrl: "views/posts/index.html",
-                        controller: 'PostsController'
-                    }
-                }
-            })
-            .state('tabs.navstack', {
-                url: "/navstack",
-                views: {
-                    'about-tab': {
-                        templateUrl: "nav-stack.html"
-                    }
-                }
-            })
-            .state('app.contact', {
-                url: "/contacts",
-                views: {
-                    'contact-tab': {
-                        templateUrl: "views/contacts/contacts.html",
-                        controller: "ContactsController"
-                    }
-                }
-            })
-            .state('app.profile', {
-                url: "/profile/:id",
-                views: {
-                    'contact-tab': {
-                        templateUrl: "views/contacts/profile.html",
-                        controller: 'ContactsController'
-                    }
-                }
-            })
             .state('app.map', {
                 url: "/map",
                 views: {
                     'map-tab': {
                         templateUrl: "views/map/index.html",
                         controller: "MapsController"
+                    }
+                }
+            })
+            .state('app.settings', {
+                url: "/settings",
+                views: {
+                    'settings-tab': {
+                        templateUrl: "views/settings/index.html",
+                        controller: "SettingController"
                     }
                 }
             });

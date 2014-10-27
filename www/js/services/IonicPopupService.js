@@ -17,6 +17,18 @@
                         title: title,
                         template: message
                     });
+                },
+                showSuccess: function showSuccess(message){
+                    $ionicPopup.show({
+                        title: "Success&nbsp;<i class='fa fa-check-circle'></i>",
+                        subTitle: message,
+                        buttons: [
+                            {
+                                text: 'Ok',
+                                type: 'button-balanced'
+                            }
+                         ]
+                    });
                 }
           }
        });

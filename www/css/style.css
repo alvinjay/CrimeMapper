@@ -1,6 +1,15 @@
 /* Empty. Add your own CSS if you like */
+#attachmentImage{
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.tabs-dark{
+    opacity: 1;
+}
 .bar-dark{
     box-shadow: 0px 5px 5px grey;
+    opacity: 1;
 }
 
 .item.item-avatar-right{
